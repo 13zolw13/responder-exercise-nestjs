@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from '../database/database.module';
 import { QuestionsModule } from '../questions/questions.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -11,7 +12,7 @@ import { AppService } from './app.service';
       isGlobal: true,
       cache: true,
     }),
-
+    DatabaseModule,
     QuestionsModule,
   ],
   controllers: [AppController],
