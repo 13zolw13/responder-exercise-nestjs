@@ -82,7 +82,6 @@ describe('QuestionsService', () => {
       expect(question).toBeDefined();
 
       const response = await service.findQuestionById(faker.datatype.uuid());
-      console.log(response);
       expect(response).toBeUndefined();
     });
 
