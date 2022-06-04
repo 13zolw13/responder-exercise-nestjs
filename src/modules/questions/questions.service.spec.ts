@@ -43,11 +43,21 @@ describe('QuestionsService', () => {
     });
   });
   describe('GetQuestions', () => {
-    describe('Empty db', () => {
-      it('Should return empty array', async () => {
-        const response = await service.getQuestions();
-        expect(response).toMatchSnapshot();
-      });
+    it('Should return empty array', async () => {
+      const response = await service.getQuestions();
+      expect(response).toMatchSnapshot();
+    });
+
+    it('should return array of questions', async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      await service.createQuestion(fakeQuestion);
+      const response = await service.getQuestions();
+      expect(response.length).toBeGreaterThan(0);
+      expect(response).toBeInstanceOf(Array);
+      expect(response).toContainEqual(expect.objectContaining(fakeQuestion));
     });
   });
 });
