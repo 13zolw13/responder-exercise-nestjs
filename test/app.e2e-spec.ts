@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -35,6 +36,19 @@ describe('AppController (e2e)', () => {
     describe('(GET)', () => {
       it('should return empty table', async () => {
         return appGet().get('/questions').expect(200).expect([]);
+      });
+      it('should return array of questions', async () => {
+        const fakeQuestion: CreateQuestionDto = {
+          summary: faker.lorem.sentence() + '?',
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        };
+        await appGet().post('/questions').send(fakeQuestion).expect(201);
+        const response = await appGet().get('/questions');
+        expect(response.body.length).toBeGreaterThan(0);
+        expect(response.body).toBeInstanceOf(Array);
+        expect(response.body).toEqual([
+          expect.objectContaining({ ...fakeQuestion }),
+        ]);
       });
     });
   });
