@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CreateQuestionDto } from './dto/questionDto';
 import { QuestionsService } from './questions.service';
 
@@ -14,5 +21,10 @@ export class QuestionsController {
   @Post()
   createQuestion(@Body(new ValidationPipe()) questionDto: CreateQuestionDto) {
     return this.questionsService.createQuestion(questionDto);
+  }
+
+  @Get('/:questionId')
+  async findQuestionById(@Param('questionId') questionId) {
+    return await this.questionsService.findQuestionById(questionId);
   }
 }
