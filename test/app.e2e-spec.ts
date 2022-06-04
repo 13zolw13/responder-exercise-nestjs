@@ -52,4 +52,56 @@ describe('AppController (e2e)', () => {
       });
     });
   });
+  describe('/questions/:questionsId', () => {
+    describe('GET', () => {
+      it('should return question', async () => {
+        const fakeQuestion: CreateQuestionDto = {
+          summary: faker.lorem.sentence() + '?',
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        };
+        const question = await appGet()
+          .post('/questions')
+          .send(fakeQuestion)
+          .expect(201);
+        const questionId = question.body.id;
+        const response = await appGet()
+          .get(`/questions/${questionId}`)
+          .expect(200);
+        console.log(response.body);
+        expect(response.body).toEqual(expect.objectContaining(fakeQuestion));
+      });
+    });
+    it('should throw error-wrong id', async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence() + '?',
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await appGet()
+        .post('/questions')
+        .send(fakeQuestion)
+        .expect(201);
+
+      const response = await appGet().get(`/questions/123`);
+
+      expect(response.body.message).toBe('Internal server error');
+      expect(response.status).toBe(500);
+    });
+
+    it('should return undefined', async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence() + '?',
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await appGet()
+        .post('/questions')
+        .send(fakeQuestion)
+        .expect(201);
+
+      const response = await appGet().get(
+        `/questions/${faker.datatype.uuid()}`,
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toStrictEqual({});
+    });
+  });
 });
