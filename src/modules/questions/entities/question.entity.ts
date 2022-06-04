@@ -1,14 +1,14 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('Question')
+@Entity({ name: 'questions' })
 export class Question {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   summary: string;
 
-  @Column()
+  @Column({})
   author: string;
 
   //   @Column()
