@@ -16,4 +16,7 @@ export class QuestionsService {
   createQuestion(questionDto: CreateQuestionDto) {
     return this.questionRepository.save(questionDto);
   }
+  async findQuestionById(id: string) {
+    return await this.questionRepository.findOne(id);
+  }
 }
