@@ -60,4 +60,42 @@ describe('QuestionsService', () => {
       expect(response).toContainEqual(expect.objectContaining(fakeQuestion));
     });
   });
+  describe('FindQuestionById', () => {
+    it('should return  search question', async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await service.createQuestion(fakeQuestion);
+      expect(question).toBeDefined();
+
+      const response = await service.findQuestionById(question.id);
+
+      expect(response).toEqual(expect.objectContaining(fakeQuestion));
+    });
+    it(`should return undefined is question doesn't exists`, async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await service.createQuestion(fakeQuestion);
+      expect(question).toBeDefined();
+
+      const response = await service.findQuestionById(faker.datatype.uuid());
+      console.log(response);
+      expect(response).toBeUndefined();
+    });
+
+    it('should  throw error if id is not standard', async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await service.createQuestion(fakeQuestion);
+      expect(question).toBeDefined();
+      await expect(
+        service.findQuestionById(question.id + 'a'),
+      ).rejects.toThrow();
+    });
+  });
 });
