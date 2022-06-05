@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Answer } from './answers.entity';
 
 @Entity({ name: 'questions' })
 export class Question {
@@ -11,6 +18,7 @@ export class Question {
   @Column({})
   author: string;
 
-  //   @Column()
-  //   answers: string[];
+  @OneToMany((type) => Answer, (answer) => answer.question)
+  @JoinTable()
+  answers: Answer[];
 }
