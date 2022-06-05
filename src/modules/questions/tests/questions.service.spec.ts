@@ -2,11 +2,13 @@ import { faker } from '@faker-js/faker';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { cleanupBeforeEachSpec } from '../../utils/dbCleaner';
-import { DatabaseModule } from '../database/database.module';
-import { CreateQuestionDto } from './dto/questionDto';
-import { Question } from './entities/question.entity';
-import { QuestionsService } from './questions.service';
+import { cleanupBeforeEachSpec } from '../../../utils/dbCleaner';
+import { DatabaseModule } from '../../database/database.module';
+import { CreateAnswerDto } from '../dto/answerDto';
+import { Answer } from '../entities/answers.entity';
+import { CreateQuestionDto } from './../dto/questionDto';
+import { Question } from './../entities/question.entity';
+import { QuestionsService } from './../questions.service';
 describe('QuestionsService', () => {
   let service: QuestionsService;
 
@@ -19,7 +21,7 @@ describe('QuestionsService', () => {
           cache: true,
         }),
         DatabaseModule,
-        TypeOrmModule.forFeature([Question]),
+        TypeOrmModule.forFeature([Question, Answer]),
       ],
       providers: [QuestionsService],
     }).compile();
@@ -95,6 +97,28 @@ describe('QuestionsService', () => {
       await expect(
         service.findQuestionById(question.id + 'a'),
       ).rejects.toThrow();
+    });
+  });
+  describe('Add answers', () => {
+    it('should add answer', async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await service.createQuestion(fakeQuestion);
+      expect(question).toBeDefined();
+      const fakeAnswer: CreateAnswerDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        questionId: question.id,
+      };
+      const answer = await service.addAnswer(fakeAnswer);
+      expect(answer).toBeDefined();
+      expect(answer).toEqual(expect.objectContaining(fakeAnswer));
+      expect(await service.findQuestionById(question.id)).toMatchObject({
+        ...fakeQuestion,
+        answers: [{ ...fakeAnswer }],
+      });
     });
   });
 });
