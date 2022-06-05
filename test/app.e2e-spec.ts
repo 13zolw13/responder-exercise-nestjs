@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/modules/app/app.module';
+import { CreateAnswerDto } from '../src/modules/questions/dto/answerDto';
 import { CreateQuestionDto } from '../src/modules/questions/dto/questionDto';
 import { cleanupBeforeEachSpec } from '../src/utils/dbCleaner';
 
@@ -18,11 +19,11 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  cleanupBeforeEachSpec();
+
   it('/ (GET)', () => {
     return appGet().get('/').expect(200).expect('Hello World!');
   });
-  cleanupBeforeEachSpec();
-
   describe('/questions', () => {
     describe('POST', () => {
       it('should add new question', async () => {
@@ -102,6 +103,31 @@ describe('AppController (e2e)', () => {
       );
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual({});
+    });
+  });
+
+  describe('/questions/:questionsId/answers', () => {
+    describe('(POST)', () => {
+      it('should add new answer', async () => {
+        const fakeQuestion: CreateQuestionDto = {
+          summary: faker.lorem.sentence() + '?',
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        };
+        const question = await appGet()
+          .post('/questions')
+          .send(fakeQuestion)
+          .expect(201);
+
+        const fakeAnswer: CreateAnswerDto = {
+          summary: faker.lorem.sentence(),
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+          questionId: question.body.id,
+        };
+        const response = await appGet()
+          .post(`/questions/${fakeAnswer.questionId}/answers`)
+          .send(fakeAnswer)
+          .expect(201);
+      });
     });
   });
 });
