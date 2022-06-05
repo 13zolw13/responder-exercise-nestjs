@@ -31,4 +31,10 @@ export class QuestionsService {
     const answer = await this.answerRepository.save({ ...createAnswerDto });
     return answer;
   }
+  async findQuestionsWithAnswers(id: string) {
+    const question = await this.questionRepository.findOne(id, {
+      relations: ['answers'],
+    });
+    return question.answers;
+  }
 }
