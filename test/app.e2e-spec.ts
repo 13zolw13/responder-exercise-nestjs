@@ -129,5 +129,49 @@ describe('AppController (e2e)', () => {
           .expect(201);
       });
     });
+    describe('(GET)', () => {
+      it('should return empty table', async () => {
+        const fakeQuestion: CreateQuestionDto = {
+          summary: faker.lorem.sentence() + '?',
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        };
+        const question = await appGet()
+          .post('/questions')
+          .send(fakeQuestion)
+          .expect(201);
+        const response = await appGet().get(
+          `/questions/${question.body.id}/answers`,
+        );
+        expect(response.body).toEqual([]);
+      });
+
+      it('should return table', async () => {
+        const fakeQuestion: CreateQuestionDto = {
+          summary: faker.lorem.sentence() + '?',
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        };
+        const question = await appGet()
+          .post('/questions')
+          .send(fakeQuestion)
+          .expect(201);
+
+        const fakeAnswer: CreateAnswerDto = {
+          summary: faker.lorem.sentence(),
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+          questionId: question.body.id,
+        };
+        const answer = await appGet()
+          .post(`/questions/${fakeAnswer.questionId}/answers`)
+          .send(fakeAnswer)
+          .expect(201);
+
+        const response = await appGet()
+          .get(`/questions/${fakeAnswer.questionId}/answers`)
+          .expect(200);
+        expect(response.body).toEqual(
+          expect.arrayContaining([expect.objectContaining(fakeAnswer)]),
+        );
+      });
+    });
   });
 });
