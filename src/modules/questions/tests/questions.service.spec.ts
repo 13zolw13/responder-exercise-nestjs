@@ -121,4 +121,35 @@ describe('QuestionsService', () => {
       });
     });
   });
+
+  describe('Answers under specific question', () => {
+    it('should return empty array', async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await service.createQuestion(fakeQuestion);
+      expect(
+        await service.findQuestionsWithAnswers(question.id),
+      ).toMatchSnapshot();
+    });
+    it('should return array of answers', async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await service.createQuestion(fakeQuestion);
+      expect(question).toBeDefined();
+      const fakeAnswer: CreateAnswerDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        questionId: question.id,
+      };
+      const answer = await service.addAnswer(fakeAnswer);
+      expect(answer).toBeDefined();
+
+      const response = await service.findQuestionsWithAnswers(question.id);
+      expect(response.length).toBeGreaterThan(0);
+    });
+  });
 });
