@@ -15,7 +15,7 @@ export class DatabaseCleaner {
     const entities = this.connection.entityMetadatas;
     for (const entity of entities) {
       const repository = this.connection.getRepository(entity.name);
-      await repository.query(`DELETE FROM ${entity.tableName};`);
+      await repository.query(`TRUNCATE ${entity.tableName} CASCADE;`);
     }
   }
 }
