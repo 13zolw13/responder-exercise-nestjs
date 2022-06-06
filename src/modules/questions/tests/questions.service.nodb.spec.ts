@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreateAnswerDto } from '../dto/answerDto';
 import { CreateQuestionDto } from '../dto/questionDto';
 import { Answer } from '../entities/answers.entity';
 import { Question } from '../entities/question.entity';
@@ -11,6 +12,7 @@ const mockQuestionDto: CreateQuestionDto = {
   summary: faker.lorem.sentence().replace('.', '?'),
   author: faker.name.firstName() + ' ' + faker.name.lastName(),
 };
+
 const MockQuestions: Question[] = [
   {
     id: faker.datatype.uuid(),
@@ -69,7 +71,11 @@ const MockAnswers: Answer[] = [
 ];
 
 MockQuestions[0].answers = MockAnswers;
-
+const MockAnswerDto: CreateAnswerDto = {
+  summary: MockAnswers[0].summary,
+  author: MockAnswers[0].author,
+  questionId: MockQuestions[0].id,
+};
 describe('QuestionService without DB', () => {
   let service: QuestionsService;
   let repositoryQuestion: Repository<Question>;
@@ -92,7 +98,7 @@ describe('QuestionService without DB', () => {
           provide: getRepositoryToken(Answer),
           useValue: {
             findOneOrFail: jest.fn().mockResolvedValue(MockAnswers[0]),
-            save: jest.fn(),
+            save: jest.fn().mockResolvedValue(MockAnswers[0]),
           },
         },
       ],
@@ -144,6 +150,13 @@ describe('QuestionService without DB', () => {
         MockQuestions[0].id,
         { relations: ['answers'] },
       );
+    });
+  });
+  describe('AddAnswer', () => {
+    it('Should create answer ', () => {
+      expect(service.addAnswer(MockAnswerDto)).resolves.toEqual(MockAnswers[0]);
+      expect(repositoryAnswer.save).toHaveBeenCalledTimes(1);
+      expect(repositoryAnswer.save).toHaveBeenCalledWith(MockAnswerDto);
     });
   });
 });
