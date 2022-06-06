@@ -40,4 +40,12 @@ export class QuestionsController {
   ) {
     return await this.questionsService.addAnswer(createAnswerDto);
   }
+
+  @Get('/:questionId/answers/:answerId')
+  async findAnswerByIds(
+    @Param('questionId') questionId,
+    @Param('answerId') answerId,
+  ) {
+    return await this.questionsService.findSpecificAnswer(questionId, answerId);
+  }
 }
