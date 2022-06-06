@@ -53,7 +53,7 @@ describe('AppController (e2e)', () => {
       });
     });
   });
-  describe('/questions/:questionsId', () => {
+  describe('/questions/:questionId', () => {
     describe('GET', () => {
       it('should return question', async () => {
         const fakeQuestion: CreateQuestionDto = {
@@ -81,7 +81,9 @@ describe('AppController (e2e)', () => {
         .send(fakeQuestion)
         .expect(201);
 
-      const response = await appGet().get(`/questions/123`);
+      const response = await appGet().get(
+        `/questions/${faker.datatype.uuid() + 1}`,
+      );
 
       expect(response.body.message).toBe('Internal server error');
       expect(response.status).toBe(500);
@@ -105,7 +107,7 @@ describe('AppController (e2e)', () => {
     });
   });
 
-  describe('/questions/:questionsId/answers', () => {
+  describe('/questions/:questionId/answers', () => {
     describe('(POST)', () => {
       it('should add new answer', async () => {
         const fakeQuestion: CreateQuestionDto = {
