@@ -37,4 +37,12 @@ export class QuestionsService {
     });
     return question.answers;
   }
+
+  async findSpecificAnswer(questionId: string, answerId: string) {
+    const answer = await this.answerRepository.findOneOrFail({
+      id: answerId,
+      questionId,
+    });
+    return answer;
+  }
 }
