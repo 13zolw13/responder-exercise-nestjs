@@ -159,4 +159,16 @@ describe('QuestionService without DB', () => {
       expect(repositoryAnswer.save).toHaveBeenCalledWith(MockAnswerDto);
     });
   });
+  describe('findSpecificAnswer', () => {
+    it('should return answer with matching id ', () => {
+      expect(
+        service.findSpecificAnswer(MockQuestions[0].id, MockAnswers[0].id),
+      ).resolves.toEqual(MockAnswers[0]);
+      expect(repositoryAnswer.findOneOrFail).toHaveBeenCalledTimes(1);
+      expect(repositoryAnswer.findOneOrFail).toHaveBeenCalledWith({
+        id: MockAnswers[0].id,
+        questionId: MockQuestions[0].id,
+      });
+    });
+  });
 });
