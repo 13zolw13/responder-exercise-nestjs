@@ -112,4 +112,12 @@ describe('Question service without DB', () => {
       expect(service.getQuestions()).resolves.toEqual(MockQuestions);
     });
   });
+  describe('createQuestion', () => {
+    it('should create new question ', () => {
+      expect(service.createQuestion(mockQuestionDto)).resolves.toEqual(
+        MockQuestions[0],
+      );
+      expect(repositoryQuestion.save).toHaveBeenCalledTimes(1);
+    });
+  });
 });
