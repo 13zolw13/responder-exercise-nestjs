@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`QuestionsService GetQuestions Should return empty array 1`] = `Array []`;
