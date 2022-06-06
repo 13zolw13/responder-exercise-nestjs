@@ -68,7 +68,9 @@ const MockAnswers: Answer[] = [
   },
 ];
 
-describe('Question service without DB', () => {
+MockQuestions[0].answers = MockAnswers;
+
+describe('QuestionService without DB', () => {
   let service: QuestionsService;
   let repositoryQuestion: Repository<Question>;
   let repositoryAnswer: Repository<Answer>;
@@ -125,6 +127,18 @@ describe('Question service without DB', () => {
       expect(service.findQuestionById(MockQuestions[0].id)).resolves.toEqual(
         MockQuestions[0],
       );
+      expect(repositoryQuestion.findOne).toHaveBeenCalledTimes(1);
+      expect(repositoryQuestion.findOne).toHaveBeenCalledWith(
+        MockQuestions[0].id,
+        { relations: ['answers'] },
+      );
+    });
+  });
+  describe('findQuestionsWithAnswers', () => {
+    it('should return array of  answers under question', () => {
+      expect(
+        service.findQuestionsWithAnswers(MockQuestions[0].id),
+      ).resolves.toEqual(MockQuestions[0].answers);
       expect(repositoryQuestion.findOne).toHaveBeenCalledTimes(1);
       expect(repositoryQuestion.findOne).toHaveBeenCalledWith(
         MockQuestions[0].id,
