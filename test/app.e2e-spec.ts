@@ -68,7 +68,6 @@ describe('AppController (e2e)', () => {
         const response = await appGet()
           .get(`/questions/${questionId}`)
           .expect(200);
-        console.log(response.body);
         expect(response.body).toEqual(expect.objectContaining(fakeQuestion));
       });
     });
@@ -171,6 +170,55 @@ describe('AppController (e2e)', () => {
         expect(response.body).toEqual(
           expect.arrayContaining([expect.objectContaining(fakeAnswer)]),
         );
+      });
+    });
+  });
+  describe('/questions/:questionsId/answers/:answerId', () => {
+    describe('(GET)', () => {
+      it('should return answer', async () => {
+        const fakeQuestion: CreateQuestionDto = {
+          summary: faker.lorem.sentence() + '?',
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        };
+        const question = await appGet()
+          .post('/questions')
+          .send(fakeQuestion)
+          .expect(201);
+        const fakeAnswer: CreateAnswerDto = {
+          summary: faker.lorem.sentence(),
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+          questionId: question.body.id,
+        };
+        const answer = await appGet()
+          .post(`/questions/${fakeAnswer.questionId}/answers`)
+          .send(fakeAnswer)
+          .expect(201);
+        const response = await appGet()
+          .get(`/questions/${fakeAnswer.questionId}/answers/${answer.body.id}`)
+          .expect(200);
+        expect(response.body).toEqual(expect.objectContaining(fakeAnswer));
+      });
+      it('should return error ', async () => {
+        const fakeQuestion: CreateQuestionDto = {
+          summary: faker.lorem.sentence() + '?',
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        };
+        const question = await appGet().post('/questions').send(fakeQuestion);
+        const fakeAnswer: CreateAnswerDto = {
+          summary: faker.lorem.sentence(),
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+          questionId: question.body.id,
+        };
+        const answer = await appGet()
+          .post(`/questions/${fakeAnswer.questionId}/answers`)
+          .send(fakeAnswer)
+          .expect(201);
+        const fakeID = faker.datatype.uuid();
+        const response = await appGet()
+          .get(`/questions/${fakeAnswer.questionId}/answers/${fakeID}`)
+          .expect(500);
+        expect(response.body.message).toBe('Internal server error');
+        expect(response.status).toBe(500);
       });
     });
   });
