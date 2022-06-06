@@ -120,4 +120,16 @@ describe('Question service without DB', () => {
       expect(repositoryQuestion.save).toHaveBeenCalledTimes(1);
     });
   });
+  describe('findQuestionById', () => {
+    it('should return question with matching id ', () => {
+      expect(service.findQuestionById(MockQuestions[0].id)).resolves.toEqual(
+        MockQuestions[0],
+      );
+      expect(repositoryQuestion.findOne).toHaveBeenCalledTimes(1);
+      expect(repositoryQuestion.findOne).toHaveBeenCalledWith(
+        MockQuestions[0].id,
+        { relations: ['answers'] },
+      );
+    });
+  });
 });
