@@ -152,4 +152,42 @@ describe('QuestionsService', () => {
       expect(response.length).toBeGreaterThan(0);
     });
   });
+  describe('findSpecificANswer', () => {
+    it('Should return  answer details from specific question', async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await service.createQuestion(fakeQuestion);
+      expect(question).toBeDefined();
+      const fakeAnswer: CreateAnswerDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        questionId: question.id,
+      };
+      const answer = await service.addAnswer(fakeAnswer);
+      expect(answer).toBeDefined();
+      const response = await service.findSpecificAnswer(question.id, answer.id);
+      expect(response).toBeDefined();
+      expect(response).toEqual(expect.objectContaining(fakeAnswer));
+    });
+    it(`Should throw an error answer does not exists`, async () => {
+      const fakeQuestion: CreateQuestionDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+      };
+      const question = await service.createQuestion(fakeQuestion);
+      expect(question).toBeDefined();
+      const fakeAnswer: CreateAnswerDto = {
+        summary: faker.lorem.sentence(),
+        author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        questionId: question.id,
+      };
+      const answer = await service.addAnswer(fakeAnswer);
+      expect(answer).toBeDefined();
+      await expect(
+        service.findSpecificAnswer(question.id, faker.datatype.uuid()),
+      ).rejects.toThrow();
+    });
+  });
 });
