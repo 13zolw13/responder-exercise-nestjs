@@ -6,10 +6,11 @@ import {
   Post,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateAnswerDto } from './dto/answerDto';
 import { CreateQuestionDto } from './dto/questionDto';
 import { QuestionsService } from './questions.service';
-
+@ApiTags('Questions')
 @Controller('questions')
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
