@@ -36,6 +36,11 @@ describe('QuestionsController', () => {
       return MockQuestions.find((question) => question.id === questionId)
         .answers;
     }
+    async findSpecificAnswer(questionId: string, answerId: string) {
+      return MockQuestions.find(
+        (question) => question.id === questionId,
+      ).answers.find((answer) => answer.id === answerId);
+    }
   }
 
   beforeEach(async () => {
@@ -88,5 +93,14 @@ describe('QuestionsController', () => {
     );
     expect(answers).toBeDefined();
     expect(answers).toEqual(MockQuestions[0].answers);
+  });
+
+  it('should return specific answer ', async () => {
+    const answer = await controller.findAnswerByIds(
+      MockQuestions[0].id,
+      MockQuestions[0].answers[0].id,
+    );
+    expect(answer).toBeDefined();
+    expect(answer).toEqual(MockQuestions[0].answers[0]);
   });
 });
