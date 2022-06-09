@@ -1,9 +1,14 @@
 import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CreateAnswerDto } from './dto/answer.dto';
 import { CreateQuestionDto } from './dto/question.dto';
 import { QuestionsController } from './questions.controller';
 import { QuestionsService } from './questions.service';
-import { mockQuestionDto, MockQuestions } from './tests/mockQuestionDto';
+import {
+  MockAnswerDto,
+  mockQuestionDto,
+  MockQuestions,
+} from './tests/mockQuestionDto';
 
 describe('QuestionsController', () => {
   let controller: QuestionsController;
@@ -20,6 +25,12 @@ describe('QuestionsController', () => {
     }
     async findQuestionById(questionId: string) {
       return MockQuestions.find((question) => question.id === questionId);
+    }
+    async addAnswer(createAnswerDto: CreateAnswerDto) {
+      return {
+        ...createAnswerDto,
+        id: faker.datatype.uuid(),
+      };
     }
   }
 
@@ -56,5 +67,15 @@ describe('QuestionsController', () => {
     const question = await controller.findQuestionById(MockQuestions[0].id);
     expect(question).toBeDefined();
     expect(question).toEqual(MockQuestions[0]);
+  });
+  it('should return created answer ', async () => {
+    const answer = await controller.AddAnswers(MockAnswerDto);
+    expect(answer).toBeDefined();
+    expect(answer).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        ...MockAnswerDto,
+      }),
+    );
   });
 });
