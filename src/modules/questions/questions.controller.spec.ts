@@ -32,6 +32,10 @@ describe('QuestionsController', () => {
         id: faker.datatype.uuid(),
       };
     }
+    async findQuestionsWithAnswers(questionId: string) {
+      return MockQuestions.find((question) => question.id === questionId)
+        .answers;
+    }
   }
 
   beforeEach(async () => {
@@ -77,5 +81,12 @@ describe('QuestionsController', () => {
         ...MockAnswerDto,
       }),
     );
+  });
+  it('should return array of answers ', async () => {
+    const answers = await controller.findQuestionsWithAnswers(
+      MockQuestions[0].id,
+    );
+    expect(answers).toBeDefined();
+    expect(answers).toEqual(MockQuestions[0].answers);
   });
 });
