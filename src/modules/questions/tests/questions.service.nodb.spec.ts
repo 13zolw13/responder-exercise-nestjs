@@ -1,81 +1,16 @@
-import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateAnswerDto } from '../dto/answerDto';
-import { CreateQuestionDto } from '../dto/questionDto';
 import { Answer } from '../entities/answers.entity';
 import { Question } from '../entities/question.entity';
 import { QuestionsService } from '../questions.service';
+import {
+  MockAnswerDto,
+  MockAnswers,
+  mockQuestionDto,
+  MockQuestions,
+} from './mockQuestionDto';
 
-const mockQuestionDto: CreateQuestionDto = {
-  summary: faker.lorem.sentence().replace('.', '?'),
-  author: faker.name.firstName() + ' ' + faker.name.lastName(),
-};
-
-const MockQuestions: Question[] = [
-  {
-    id: faker.datatype.uuid(),
-    summary: mockQuestionDto.summary,
-    author: mockQuestionDto.author,
-    answers: [],
-  },
-  {
-    id: faker.datatype.uuid(),
-    summary: faker.lorem.sentence().replace('.', '?'),
-    author: faker.name.firstName(),
-    answers: [],
-  },
-  {
-    id: faker.datatype.uuid(),
-    summary: faker.lorem.sentence().replace('.', '?'),
-    author: faker.name.firstName(),
-    answers: [],
-  },
-  {
-    id: faker.datatype.uuid(),
-    summary: faker.lorem.sentence().replace('.', '?'),
-    author: faker.name.firstName(),
-    answers: [],
-  },
-];
-const MockAnswers: Answer[] = [
-  {
-    id: faker.datatype.uuid(),
-    summary: faker.lorem.sentence(),
-    author: faker.name.firstName(),
-    questionId: MockQuestions[0].id,
-    question: MockQuestions[0],
-  },
-  {
-    id: faker.datatype.uuid(),
-    summary: faker.lorem.sentence(),
-    author: faker.name.firstName(),
-    questionId: MockQuestions[0].id,
-    question: MockQuestions[0],
-  },
-  {
-    id: faker.datatype.uuid(),
-    summary: faker.lorem.sentence(),
-    author: faker.name.firstName(),
-    questionId: MockQuestions[0].id,
-    question: MockQuestions[0],
-  },
-  {
-    id: faker.datatype.uuid(),
-    summary: faker.lorem.sentence(),
-    author: faker.name.firstName(),
-    questionId: MockQuestions[0].id,
-    question: MockQuestions[0],
-  },
-];
-
-MockQuestions[0].answers = MockAnswers;
-const MockAnswerDto: CreateAnswerDto = {
-  summary: MockAnswers[0].summary,
-  author: MockAnswers[0].author,
-  questionId: MockQuestions[0].id,
-};
 describe('QuestionService without DB', () => {
   let service: QuestionsService;
   let repositoryQuestion: Repository<Question>;

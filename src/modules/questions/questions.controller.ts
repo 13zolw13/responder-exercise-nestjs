@@ -7,8 +7,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateAnswerDto } from './dto/answerDto';
-import { CreateQuestionDto } from './dto/questionDto';
+import { CreateAnswerDto } from './dto/answer.dto';
+import { CreateQuestionDto } from './dto/question.dto';
 import { QuestionsService } from './questions.service';
 @ApiTags('Questions')
 @Controller('questions')

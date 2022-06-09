@@ -3,8 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/modules/app/app.module';
-import { CreateAnswerDto } from '../src/modules/questions/dto/answerDto';
-import { CreateQuestionDto } from '../src/modules/questions/dto/questionDto';
+import { CreateAnswerDto } from '../src/modules/questions/dto/answer.dto';
+import { CreateQuestionDto } from '../src/modules/questions/dto/question.dto';
 import { cleanupBeforeEachSpec } from '../src/utils/dbCleaner';
 
 describe('AppController (e2e)', () => {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateAnswerDto } from './dto/answerDto';
-import { CreateQuestionDto } from './dto/questionDto';
+import { CreateAnswerDto } from './dto/answer.dto';
+import { CreateQuestionDto } from './dto/question.dto';
 import { Answer } from './entities/answers.entity';
 import { Question } from './entities/question.entity';
 

@@ -4,9 +4,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { cleanupBeforeEachSpec } from '../../../utils/dbCleaner';
 import { DatabaseModule } from '../../database/database.module';
-import { CreateAnswerDto } from '../dto/answerDto';
+import { CreateAnswerDto } from '../dto/answer.dto';
 import { Answer } from '../entities/answers.entity';
-import { CreateQuestionDto } from './../dto/questionDto';
+import { CreateQuestionDto } from '../dto/question.dto';
 import { Question } from './../entities/question.entity';
 import { QuestionsService } from './../questions.service';
 describe('QuestionsService', () => {
