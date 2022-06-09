@@ -1,13 +1,14 @@
+import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CreateQuestionDto } from './dto/question.dto';
 import { QuestionsController } from './questions.controller';
 import { QuestionsService } from './questions.service';
-import { MockQuestions } from './tests/mockQuestionDto';
-
+import { mockQuestionDto, MockQuestions } from './tests/mockQuestionDto';
 describe('QuestionsController', () => {
   let controller: QuestionsController;
   class QuestionsServiceMock {
-    createQuestion() {
-      return {};
+    createQuestion(CreateQuestionDto: CreateQuestionDto) {
+      return { id: faker.datatype.uuid(), ...CreateQuestionDto, answers: [] };
     }
     getQuestions() {
       return MockQuestions;
@@ -30,9 +31,18 @@ describe('QuestionsController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should be defined', () => {
+  it('should return array of questions ', () => {
     expect(controller.getQuestions()).toBeDefined();
-    console.log(controller.getQuestions());
     expect(controller.getQuestions()).toEqual([...MockQuestions]);
+  });
+  it('should return created question ', async () => {
+    const question = await controller.createQuestion(mockQuestionDto);
+    expect(question).toBeDefined();
+    expect(question).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        ...mockQuestionDto,
+      }),
+    );
   });
 });
