@@ -47,6 +47,7 @@ describe('UsersService', () => {
           provide: getRepositoryToken(User),
           useValue: {
             save: jest.fn().mockResolvedValue(MockUsers[0]),
+            find: jest.fn().mockResolvedValue(MockUsers),
           },
         },
       ],
@@ -63,5 +64,11 @@ describe('UsersService', () => {
     expect(service.create(createMockUserDto)).resolves.toEqual(MockUsers[0]);
     expect(repositoryUser.save).toHaveBeenCalledTimes(1);
     expect(repositoryUser.save).toHaveBeenCalledWith(createMockUserDto);
+  });
+
+  it('should return array of users', () => {
+    expect(service.findAll()).resolves.toEqual(MockUsers);
+    expect(repositoryUser.find).toHaveBeenCalledTimes(1);
+    expect(repositoryUser.find).toHaveBeenCalledWith();
   });
 });
