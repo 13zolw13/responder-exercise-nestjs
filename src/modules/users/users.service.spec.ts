@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -35,6 +36,13 @@ const createMockUserDto: CreateUserDto = {
   password: MockUsers[0].password,
 };
 
+const updateMockUserDto: UpdateUserDto = {
+  username: faker.name.firstName(),
+  email: faker.internet.email(),
+  password: faker.internet.password(),
+  id: MockUsers[0].id,
+};
+
 describe('UsersService', () => {
   let service: UsersService;
   let repositoryUser: Repository<User>;
@@ -49,6 +57,7 @@ describe('UsersService', () => {
             save: jest.fn().mockResolvedValue(MockUsers[0]),
             find: jest.fn().mockResolvedValue(MockUsers),
             findOneOrFail: jest.fn().mockResolvedValue(MockUsers[0]),
+            update: jest.fn().mockResolvedValue(updateMockUserDto),
           },
         },
       ],
@@ -76,5 +85,11 @@ describe('UsersService', () => {
     expect(service.findOne(MockUsers[0].id)).resolves.toEqual(MockUsers[0]);
     expect(repositoryUser.findOneOrFail).toHaveBeenCalledTimes(1);
     expect(repositoryUser.findOneOrFail).toHaveBeenCalledWith(MockUsers[0].id);
+  });
+  it('should update user', async () => {
+    expect(service.update(updateMockUserDto)).resolves.toEqual(
+      updateMockUserDto,
+    );
+    expect(repositoryUser.update).toHaveBeenCalledTimes(1);
   });
 });
