@@ -48,6 +48,7 @@ describe('UsersService', () => {
           useValue: {
             save: jest.fn().mockResolvedValue(MockUsers[0]),
             find: jest.fn().mockResolvedValue(MockUsers),
+            findOneOrFail: jest.fn().mockResolvedValue(MockUsers[0]),
           },
         },
       ],
@@ -70,5 +71,10 @@ describe('UsersService', () => {
     expect(service.findAll()).resolves.toEqual(MockUsers);
     expect(repositoryUser.find).toHaveBeenCalledTimes(1);
     expect(repositoryUser.find).toHaveBeenCalledWith();
+  });
+  it('should return user by id', () => {
+    expect(service.findOne(MockUsers[0].id)).resolves.toEqual(MockUsers[0]);
+    expect(repositoryUser.findOneOrFail).toHaveBeenCalledTimes(1);
+    expect(repositoryUser.findOneOrFail).toHaveBeenCalledWith(MockUsers[0].id);
   });
 });
