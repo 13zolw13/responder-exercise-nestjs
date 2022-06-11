@@ -10,6 +10,10 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
+  async findOneByUsername(username: string) {
+    return await this.userRepository.findOne({ username: username });
+  }
+
   async create(createUserDto: CreateUserDto) {
     return await this.userRepository.save(createUserDto);
   }
