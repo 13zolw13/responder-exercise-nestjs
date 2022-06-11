@@ -59,6 +59,7 @@ describe('UsersService', () => {
             findOneOrFail: jest.fn().mockResolvedValue(MockUsers[0]),
             update: jest.fn().mockResolvedValue(updateMockUserDto),
             delete: jest.fn().mockResolvedValue('User successfully deleted'),
+            findOne: jest.fn().mockResolvedValue(MockUsers[0]),
           },
         },
       ],
@@ -101,5 +102,15 @@ describe('UsersService', () => {
     );
     expect(repositoryUser.delete).toHaveBeenCalledTimes(1);
     expect(repositoryUser.delete).toHaveBeenCalledWith(MockUsers[0].id);
+  });
+
+  it('should return user by username', () => {
+    expect(service.findOneByUsername(MockUsers[0].username)).resolves.toEqual(
+      MockUsers[0],
+    );
+    expect(repositoryUser.findOne).toHaveBeenCalledTimes(1);
+    expect(repositoryUser.findOne).toHaveBeenCalledWith({
+      username: MockUsers[0].username,
+    });
   });
 });
