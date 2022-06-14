@@ -5,6 +5,7 @@ import * as request from 'supertest';
 import { AppModule } from '../src/modules/app/app.module';
 import { CreateAnswerDto } from '../src/modules/questions/dto/answer.dto';
 import { CreateQuestionDto } from '../src/modules/questions/dto/question.dto';
+import { CreateUserDto } from '../src/modules/users/dto/create-user.dto';
 import { cleanupBeforeEachSpec } from '../src/utils/dbCleaner';
 
 describe('AppController (e2e)', () => {
@@ -70,40 +71,41 @@ describe('AppController (e2e)', () => {
           .expect(200);
         expect(response.body).toEqual(expect.objectContaining(fakeQuestion));
       });
-    });
-    it('should throw error-wrong id', async () => {
-      const fakeQuestion: CreateQuestionDto = {
-        summary: faker.lorem.sentence() + '?',
-        author: faker.name.firstName() + ' ' + faker.name.lastName(),
-      };
-      const question = await appGet()
-        .post('/questions')
-        .send(fakeQuestion)
-        .expect(201);
 
-      const response = await appGet().get(
-        `/questions/${faker.datatype.uuid() + 1}`,
-      );
+      it('should throw error-wrong id', async () => {
+        const fakeQuestion: CreateQuestionDto = {
+          summary: faker.lorem.sentence() + '?',
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        };
+        const question = await appGet()
+          .post('/questions')
+          .send(fakeQuestion)
+          .expect(201);
 
-      expect(response.body.message).toBe('Internal server error');
-      expect(response.status).toBe(500);
-    });
+        const response = await appGet().get(
+          `/questions/${faker.datatype.uuid() + 1}`,
+        );
 
-    it('should return undefined', async () => {
-      const fakeQuestion: CreateQuestionDto = {
-        summary: faker.lorem.sentence() + '?',
-        author: faker.name.firstName() + ' ' + faker.name.lastName(),
-      };
-      const question = await appGet()
-        .post('/questions')
-        .send(fakeQuestion)
-        .expect(201);
+        expect(response.body.message).toBe('Internal server error');
+        expect(response.status).toBe(500);
+      });
 
-      const response = await appGet().get(
-        `/questions/${faker.datatype.uuid()}`,
-      );
-      expect(response.status).toBe(200);
-      expect(response.body).toStrictEqual({});
+      it('should return undefined', async () => {
+        const fakeQuestion: CreateQuestionDto = {
+          summary: faker.lorem.sentence() + '?',
+          author: faker.name.firstName() + ' ' + faker.name.lastName(),
+        };
+        const question = await appGet()
+          .post('/questions')
+          .send(fakeQuestion)
+          .expect(201);
+
+        const response = await appGet().get(
+          `/questions/${faker.datatype.uuid()}`,
+        );
+        expect(response.status).toBe(200);
+        expect(response.body).toStrictEqual({});
+      });
     });
   });
 
@@ -221,6 +223,24 @@ describe('AppController (e2e)', () => {
           .expect(500);
         expect(response.body.message).toBe('Internal server error');
         expect(response.status).toBe(500);
+      });
+    });
+  });
+
+  describe('/login', () => {
+    describe('(POST)', () => {
+      it('should login, and return access token', async () => {
+        const fakeUser: CreateUserDto = {
+          username: faker.internet.userName(),
+          password: faker.internet.password(),
+          email: faker.internet.email(),
+        };
+        await appGet().post('/users/signup').send(fakeUser).expect(201);
+        const response = await appGet()
+          .post('/login')
+          .send({ username: fakeUser.username, password: fakeUser.password });
+        expect(response.status).toBe(201);
+        expect(response.body.access_token).toBeDefined();
       });
     });
   });
