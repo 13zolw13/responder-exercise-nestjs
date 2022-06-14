@@ -22,9 +22,6 @@ describe('AppController (e2e)', () => {
 
   cleanupBeforeEachSpec();
 
-  it('/ (GET)', () => {
-    return appGet().get('/').expect(200).expect('Hello World!');
-  });
   describe('/questions', () => {
     describe('POST', () => {
       it('should add new question', async () => {
