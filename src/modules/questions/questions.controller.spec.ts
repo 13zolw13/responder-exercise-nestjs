@@ -1,47 +1,14 @@
-import { faker } from '@faker-js/faker';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateAnswerDto } from './dto/answer.dto';
-import { CreateQuestionDto } from './dto/question.dto';
 import { QuestionsController } from './questions.controller';
 import { QuestionsService } from './questions.service';
+import { QuestionsServiceMock } from './QuestionsServiceMock';
 import {
   MockAnswerDto,
   mockQuestionDto,
   MockQuestions,
 } from './tests/mockQuestionDto';
-
 describe('QuestionsController', () => {
   let controller: QuestionsController;
-  class QuestionsServiceMock {
-    async createQuestion(createQuestionDto: CreateQuestionDto) {
-      return {
-        ...createQuestionDto,
-        id: faker.datatype.uuid(),
-      };
-    }
-
-    getQuestions() {
-      return MockQuestions;
-    }
-    async findQuestionById(questionId: string) {
-      return MockQuestions.find((question) => question.id === questionId);
-    }
-    async addAnswer(createAnswerDto: CreateAnswerDto) {
-      return {
-        ...createAnswerDto,
-        id: faker.datatype.uuid(),
-      };
-    }
-    async findQuestionsWithAnswers(questionId: string) {
-      return MockQuestions.find((question) => question.id === questionId)
-        .answers;
-    }
-    async findSpecificAnswer(questionId: string, answerId: string) {
-      return MockQuestions.find(
-        (question) => question.id === questionId,
-      ).answers.find((answer) => answer.id === answerId);
-    }
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
