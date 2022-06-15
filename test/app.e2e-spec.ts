@@ -1,25 +1,29 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import * as jwt from 'jsonwebtoken';
 import * as request from 'supertest';
 import { AppModule } from '../src/modules/app/app.module';
+import { JwtStrategy } from '../src/modules/authentication/strategies/authentication.jwt.strategy';
+import { JwtStrategyMock } from '../src/modules/authentication/strategies/mock.jwt.strategy';
 import { CreateAnswerDto } from '../src/modules/questions/dto/answer.dto';
 import { CreateQuestionDto } from '../src/modules/questions/dto/question.dto';
-import { CreateUserDto } from '../src/modules/users/dto/create-user.dto';
 import { cleanupBeforeEachSpec } from '../src/utils/dbCleaner';
 
-describe('AppController (e2e)', () => {
+describe('e2e with mock jwt', () => {
   let app: INestApplication;
   const appGet = () => request(app.getHttpServer());
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(JwtStrategy)
+      .useClass(JwtStrategyMock)
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
   });
-
   cleanupBeforeEachSpec();
 
   describe('/questions', () => {
@@ -29,7 +33,11 @@ describe('AppController (e2e)', () => {
           summary: 'test',
           author: 'John Doe',
         };
-        return appGet().post('/questions').send(fakeQuestion).expect(201);
+        return asAuthorizedUser(
+          appGet().post('/questions').send(fakeQuestion),
+          'dasdas',
+          'adsds',
+        ).expect(201);
       });
     });
     describe('(GET)', () => {
@@ -223,22 +231,21 @@ describe('AppController (e2e)', () => {
       });
     });
   });
-
-  describe('/login', () => {
-    describe('(POST)', () => {
-      it('should login, and return access token', async () => {
-        const fakeUser: CreateUserDto = {
-          username: faker.internet.userName(),
-          password: faker.internet.password(),
-          email: faker.internet.email(),
-        };
-        await appGet().post('/users/signup').send(fakeUser).expect(201);
-        const response = await appGet()
-          .post('/login')
-          .send({ username: fakeUser.username, password: fakeUser.password });
-        expect(response.status).toBe(201);
-        expect(response.body.access_token).toBeDefined();
-      });
-    });
+  afterAll(async () => {
+    await app.close();
   });
 });
+
+const createToken = (userId: string, username: string) => {
+  return jwt.sign(
+    {
+      sub: userId,
+      username: username,
+    },
+    JwtStrategyMock.SECRET_MOCK,
+  );
+};
+
+function asAuthorizedUser(fn: request.Test, userId: string, username: string) {
+  return fn.set({ Authorization: `Bearer ${createToken(userId, username)}` });
+}
