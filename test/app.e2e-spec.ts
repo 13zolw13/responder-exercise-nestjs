@@ -13,6 +13,7 @@ import { cleanupBeforeEachSpec } from '../src/utils/dbCleaner';
 describe('e2e with mock jwt', () => {
   let app: INestApplication;
   const appGet = () => request(app.getHttpServer());
+  let question: request.Response;
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -26,30 +27,26 @@ describe('e2e with mock jwt', () => {
   });
   cleanupBeforeEachSpec();
 
+  const fakeQuestion: CreateQuestionDto = {
+    summary: faker.lorem.sentence() + '?',
+    author: faker.name.firstName() + ' ' + faker.name.lastName(),
+  };
+
+  async function stabQuestion() {
+    return await appGet().post('/questions').send(fakeQuestion).expect(201);
+  }
+  beforeEach(async () => {
+    question = await stabQuestion();
+  });
+
   describe('/questions', () => {
     describe('POST', () => {
       it('should add new question', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: 'test',
-          author: 'John Doe',
-        };
-        return asAuthorizedUser(
-          appGet().post('/questions').send(fakeQuestion),
-          'dasdas',
-          'adsds',
-        ).expect(201);
+        await appGet().post('/questions').send(fakeQuestion).expect(201);
       });
     });
     describe('(GET)', () => {
-      it('should return empty table', async () => {
-        return appGet().get('/questions').expect(200).expect([]);
-      });
       it('should return array of questions', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: faker.lorem.sentence() + '?',
-          author: faker.name.firstName() + ' ' + faker.name.lastName(),
-        };
-        await appGet().post('/questions').send(fakeQuestion).expect(201);
         const response = await appGet().get('/questions');
         expect(response.body.length).toBeGreaterThan(0);
         expect(response.body).toBeInstanceOf(Array);
@@ -62,14 +59,6 @@ describe('e2e with mock jwt', () => {
   describe('/questions/:questionId', () => {
     describe('GET', () => {
       it('should return question', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: faker.lorem.sentence() + '?',
-          author: faker.name.firstName() + ' ' + faker.name.lastName(),
-        };
-        const question = await appGet()
-          .post('/questions')
-          .send(fakeQuestion)
-          .expect(201);
         const questionId = question.body.id;
         const response = await appGet()
           .get(`/questions/${questionId}`)
@@ -78,15 +67,6 @@ describe('e2e with mock jwt', () => {
       });
 
       it('should throw error-wrong id', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: faker.lorem.sentence() + '?',
-          author: faker.name.firstName() + ' ' + faker.name.lastName(),
-        };
-        const question = await appGet()
-          .post('/questions')
-          .send(fakeQuestion)
-          .expect(201);
-
         const response = await appGet().get(
           `/questions/${faker.datatype.uuid() + 1}`,
         );
@@ -96,15 +76,6 @@ describe('e2e with mock jwt', () => {
       });
 
       it('should return undefined', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: faker.lorem.sentence() + '?',
-          author: faker.name.firstName() + ' ' + faker.name.lastName(),
-        };
-        const question = await appGet()
-          .post('/questions')
-          .send(fakeQuestion)
-          .expect(201);
-
         const response = await appGet().get(
           `/questions/${faker.datatype.uuid()}`,
         );
@@ -117,15 +88,6 @@ describe('e2e with mock jwt', () => {
   describe('/questions/:questionId/answers', () => {
     describe('(POST)', () => {
       it('should add new answer', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: faker.lorem.sentence() + '?',
-          author: faker.name.firstName() + ' ' + faker.name.lastName(),
-        };
-        const question = await appGet()
-          .post('/questions')
-          .send(fakeQuestion)
-          .expect(201);
-
         const fakeAnswer: CreateAnswerDto = {
           summary: faker.lorem.sentence(),
           author: faker.name.firstName() + ' ' + faker.name.lastName(),
@@ -139,14 +101,6 @@ describe('e2e with mock jwt', () => {
     });
     describe('(GET)', () => {
       it('should return empty table', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: faker.lorem.sentence() + '?',
-          author: faker.name.firstName() + ' ' + faker.name.lastName(),
-        };
-        const question = await appGet()
-          .post('/questions')
-          .send(fakeQuestion)
-          .expect(201);
         const response = await appGet().get(
           `/questions/${question.body.id}/answers`,
         );
@@ -154,15 +108,6 @@ describe('e2e with mock jwt', () => {
       });
 
       it('should return table', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: faker.lorem.sentence() + '?',
-          author: faker.name.firstName() + ' ' + faker.name.lastName(),
-        };
-        const question = await appGet()
-          .post('/questions')
-          .send(fakeQuestion)
-          .expect(201);
-
         const fakeAnswer: CreateAnswerDto = {
           summary: faker.lorem.sentence(),
           author: faker.name.firstName() + ' ' + faker.name.lastName(),
@@ -185,14 +130,6 @@ describe('e2e with mock jwt', () => {
   describe('/questions/:questionsId/answers/:answerId', () => {
     describe('(GET)', () => {
       it('should return answer', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: faker.lorem.sentence() + '?',
-          author: faker.name.firstName() + ' ' + faker.name.lastName(),
-        };
-        const question = await appGet()
-          .post('/questions')
-          .send(fakeQuestion)
-          .expect(201);
         const fakeAnswer: CreateAnswerDto = {
           summary: faker.lorem.sentence(),
           author: faker.name.firstName() + ' ' + faker.name.lastName(),
@@ -208,10 +145,6 @@ describe('e2e with mock jwt', () => {
         expect(response.body).toEqual(expect.objectContaining(fakeAnswer));
       });
       it('should return error ', async () => {
-        const fakeQuestion: CreateQuestionDto = {
-          summary: faker.lorem.sentence() + '?',
-          author: faker.name.firstName() + ' ' + faker.name.lastName(),
-        };
         const question = await appGet().post('/questions').send(fakeQuestion);
         const fakeAnswer: CreateAnswerDto = {
           summary: faker.lorem.sentence(),
