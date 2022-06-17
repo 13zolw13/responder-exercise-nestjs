@@ -170,17 +170,30 @@ describe('e2e with mock jwt', () => {
     describe('/users/signup', () => {
       describe('(POST)', () => {
         it('should create new user', async () => {
-          const response = await stabMockUser(appGet);
+          const fakeUser: CreateUserDto = {
+            username: faker.internet.userName(),
+            password: faker.internet.password(),
+            email: faker.internet.email(),
+          };
+          const response = await stabMockUser(appGet, fakeUser);
           expect(response.status).toBe(201);
         });
       });
     });
   });
   describe.only('Private', () => {
+    let userResponse: request.Response;
     const userId = faker.datatype.uuid();
     const username = faker.name.firstName();
+    const fakeUser: CreateUserDto = {
+      username: faker.internet.userName(),
+      password: faker.internet.password(),
+      email: faker.internet.email(),
+    };
+
     beforeEach(async () => {
-      await stabMockUser(appGet);
+      userResponse = await stabMockUser(appGet, fakeUser);
+      return userResponse;
     });
     describe('/users', () => {
       describe('(GET)', () => {
@@ -200,6 +213,37 @@ describe('e2e with mock jwt', () => {
         });
       });
     });
+    describe('/users/:userId', () => {
+      describe('(GET)', () => {
+        it('should return user', async () => {
+          const response = await asAuthorizedUser(
+            appGet().get(`/users/${userResponse.body.id}`),
+            userId,
+            username,
+          );
+          expect(response.status).toBe(200);
+          expect(response.body).toEqual(expect.objectContaining({}));
+        });
+        it('should return error wrong uuid', async () => {
+          const response = await asAuthorizedUser(
+            appGet().get(`/users/${userResponse.body.id + 1}`),
+            userId,
+            username,
+          );
+          expect(response.status).toBe(500);
+          expect(response.body).toEqual(expect.objectContaining({}));
+        });
+        it('should return user', async () => {
+          const response = await asAuthorizedUser(
+            appGet().get(`/users/${faker.datatype.uuid()}`),
+            userId,
+            username,
+          );
+          expect(response.status).toBe(500);
+          expect(response.body).toEqual(expect.objectContaining({}));
+        });
+      });
+    });
   });
   afterAll(async () => {
     await app.close();
@@ -216,12 +260,16 @@ const createToken = (userId: string, username: string) => {
   );
 };
 
-async function stabMockUser(appGet: () => request.SuperTest<request.Test>) {
-  const createUserDto = new CreateUserDto();
-  createUserDto.email = faker.internet.email();
-  createUserDto.password = faker.internet.password();
-  createUserDto.username = faker.name.firstName();
-  return await appGet().post('/users/signup').send(createUserDto).expect(201);
+async function stabMockUser(
+  appGet: () => request.SuperTest<request.Test>,
+  createUserDto: CreateUserDto,
+) {
+  const user = new CreateUserDto();
+  user.username = createUserDto.username;
+  user.password = createUserDto.password;
+  user.email = createUserDto.email;
+
+  return await appGet().post('/users/signup').send(user).expect(201);
 }
 
 function asAuthorizedUser(fn: request.Test, userId: string, username: string) {
