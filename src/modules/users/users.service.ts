@@ -28,11 +28,14 @@ export class UsersService {
   }
 
   async update(updateUserDto: UpdateUserDto) {
-    return await this.userRepository.update(updateUserDto.id, updateUserDto);
+    await this.userRepository.update(updateUserDto.id, {
+      ...updateUserDto,
+    });
+    return await this.userRepository.findOneOrFail(updateUserDto.id);
   }
 
   async remove(id: string) {
     await this.userRepository.delete(id);
-    return 'User successfully deleted';
+    return { message: 'User successfully deleted' };
   }
 }
