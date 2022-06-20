@@ -9,6 +9,7 @@ import { JwtStrategyMock } from '../src/modules/authentication/strategies/mock.j
 import { CreateAnswerDto } from '../src/modules/questions/dto/answer.dto';
 import { CreateQuestionDto } from '../src/modules/questions/dto/question.dto';
 import { CreateUserDto } from '../src/modules/users/dto/create-user.dto';
+import { UpdateUserDto } from '../src/modules/users/dto/update-user.dto';
 import { cleanupBeforeEachSpec } from '../src/utils/dbCleaner';
 
 describe('e2e with mock jwt', () => {
@@ -38,6 +39,7 @@ describe('e2e with mock jwt', () => {
   }
   beforeEach(async () => {
     question = await stabQuestion();
+    return question;
   });
   describe('Public', () => {
     describe('/questions', () => {
@@ -60,7 +62,7 @@ describe('e2e with mock jwt', () => {
     describe('/questions/:questionId', () => {
       describe('GET', () => {
         it('should return question', async () => {
-          const questionId = question.body.id;
+          const questionId = <string>question.body.id;
           const response = await appGet()
             .get(`/questions/${questionId}`)
             .expect(200);
@@ -193,6 +195,7 @@ describe('e2e with mock jwt', () => {
 
     beforeEach(async () => {
       userResponse = await stabMockUser(appGet, fakeUser);
+      console.log(userResponse.body);
       return userResponse;
     });
     describe('/users', () => {
@@ -222,7 +225,6 @@ describe('e2e with mock jwt', () => {
             username,
           );
           expect(response.status).toBe(200);
-          expect(response.body).toEqual(expect.objectContaining({}));
         });
         it('should return error wrong uuid', async () => {
           const response = await asAuthorizedUser(
@@ -242,6 +244,39 @@ describe('e2e with mock jwt', () => {
           expect(response.status).toBe(500);
           expect(response.body).toEqual(expect.objectContaining({}));
         });
+      });
+      describe('PATCH', () => {
+        it('should update user', async () => {
+          const updateUserDto: UpdateUserDto = {
+            username: 'johny',
+            id: userResponse.body.id,
+          };
+          const response = await asAuthorizedUser(
+            appGet()
+              .patch(`/users/${userResponse.body.id}`)
+              .send(updateUserDto),
+            userId,
+            username,
+          );
+
+          expect(response.status).toBe(200);
+          expect(response.body).toEqual(
+            expect.objectContaining({
+              username: updateUserDto.username,
+            }),
+          );
+        });
+      });
+    });
+    describe('DELETE', () => {
+      it('should delete user', async () => {
+        const response = await asAuthorizedUser(
+          appGet().delete(`/users/${userResponse.body.id}`).send(fakeUser),
+          userId,
+          username,
+        );
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('User successfully deleted');
       });
     });
   });
