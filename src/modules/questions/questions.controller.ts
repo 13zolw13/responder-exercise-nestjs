@@ -4,17 +4,21 @@ import {
   Get,
   Param,
   Post,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Public } from '../../decorators/publicSIte.decorator';
+import { JwtAuthGuard } from '../authentication/guards/authentication.jwt.guard';
 import { CreateAnswerDto } from './dto/answer.dto';
 import { CreateQuestionDto } from './dto/question.dto';
 import { QuestionsService } from './questions.service';
 @ApiTags('Questions')
+@Public()
 @Controller('questions')
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
-
+  @UseGuards(JwtAuthGuard)
   @Get()
   getQuestions() {
     return this.questionsService.getQuestions();
