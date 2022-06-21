@@ -6,6 +6,7 @@ import {
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 import { Question } from './question.entity';
 
 @Entity({ name: 'answers' })
@@ -24,4 +25,8 @@ export class Answer {
   @ManyToOne((type) => Question, (question) => question.answers)
   @JoinColumn()
   question: Question;
+
+  @ManyToOne((type) => User, (user) => user.answers)
+  @JoinColumn()
+  user: User;
 }
