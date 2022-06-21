@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsUUID } from 'class-validator';
 
 export class CreateQuestionDto {
   @IsString()
@@ -6,4 +6,8 @@ export class CreateQuestionDto {
 
   @IsString()
   author: string;
+
+  @IsString()
+  @IsUUID()
+  userId: string;
 }

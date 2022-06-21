@@ -19,7 +19,7 @@ export class QuestionsService {
     return this.questionRepository.find({ relations: ['answers'] });
   }
   createQuestion(questionDto: CreateQuestionDto) {
-    return this.questionRepository.save(questionDto);
+    return this.questionRepository.save({ ...questionDto });
   }
   async findQuestionById(id: string) {
     return await this.questionRepository.findOne(id, {
