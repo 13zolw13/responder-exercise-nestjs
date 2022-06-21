@@ -20,11 +20,15 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.userRepository.find();
+    return await this.userRepository.findAndCount({
+      relations: ['questions', 'answers'],
+    });
   }
 
   async findOne(id: string) {
-    return await this.userRepository.findOneOrFail(id);
+    return await this.userRepository.findOneOrFail(id, {
+      relations: ['questions', 'answers'],
+    });
   }
 
   async update(updateUserDto: UpdateUserDto) {
