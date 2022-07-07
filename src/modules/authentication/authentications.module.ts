@@ -21,6 +21,7 @@ import { LocalStrategy } from './strategies/authentication.local.strategy';
   controllers: [AuthenticationsController],
   providers: [
     AuthenticationsService,
+
     LocalStrategy,
     JwtStrategy,
     {
@@ -28,5 +29,6 @@ import { LocalStrategy } from './strategies/authentication.local.strategy';
       useClass: JwtAuthGuard,
     },
   ],
+  exports: [AuthenticationsService],
 })
 export class AuthenticationsModule {}

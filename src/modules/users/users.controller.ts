@@ -6,9 +6,15 @@ import {
   Param,
   Patch,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { CheckPolicies } from '../../decorators/checkRites.decorator';
 import { Public } from '../../decorators/publicSIte.decorator';
+import { AppAbility } from '../casl/casl-ability.factory';
+import { Action } from '../casl/casl.action';
+import { PoliciesGuard } from '../casl/casl.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -23,7 +29,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
+  findAll(@Request() req) {
+    console.log(req?.user);
     return this.usersService.findAll();
   }
 
@@ -33,10 +40,16 @@ export class UsersController {
   }
 
   @Patch(':userId')
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies((ability: AppAbility) =>
+    ability.can(Action.Update, UpdateUserDto),
+  )
   async update(
     @Param('userId') userId: string,
+    @Request() req,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    console.log(req?.user);
     return await this.usersService.update(updateUserDto);
   }
 
