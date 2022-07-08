@@ -12,9 +12,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { CheckPolicies } from '../../decorators/checkRites.decorator';
 import { Public } from '../../decorators/publicSIte.decorator';
-import { AppAbility } from '../casl/casl-ability.factory';
-import { Action } from '../casl/casl.action';
-import { PoliciesGuard } from '../casl/casl.guard';
+import { AuthByIdGuard } from '../auth/authorizedById.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -40,10 +38,7 @@ export class UsersController {
   }
 
   @Patch(':userId')
-  @UseGuards(PoliciesGuard)
-  @CheckPolicies((ability: AppAbility) =>
-    ability.can(Action.Update, UpdateUserDto),
-  )
+  @UseGuards(AuthByIdGuard)
   async update(
     @Param('userId') userId: string,
     @Request() req,
@@ -54,6 +49,7 @@ export class UsersController {
   }
 
   @Delete(':userId')
+  @UseGuards(AuthByIdGuard)
   remove(@Param('userId') userId: string) {
     return this.usersService.remove(userId);
   }
