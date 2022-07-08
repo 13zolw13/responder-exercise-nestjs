@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AuthenticationsModule } from '../authentication/authentications.module';
-import { CaslModule } from '../casl/casl.module';
+import { AuthenticationsModule } from '../auth/authentications.module';
+import { CaslModule } from '../auth/casl/casl.module';
 import { DatabaseModule } from '../database/database.module';
 import { QuestionsModule } from '../questions/questions.module';
 import { UsersModule } from '../users/users.module';
