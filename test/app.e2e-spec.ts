@@ -199,17 +199,18 @@ describe('e2e with mock jwt', () => {
 
     beforeEach(async () => {
       userResponse = await stabMockUser(appGet, fakeUser);
+      console.log(`Body response ${userResponse.body}`);
       return userResponse;
     });
 
     describe('/questions', () => {
       describe('POST', () => {
         it('should add new question', async () => {
-          await asAuthorizedUser(
-            appGet().post('/questions').send(fakeQuestion).expect(201),
-            userId,
-            username,
+          const newQuestion = await stabQuestion(
+            userResponse.body.id,
+            fakeQuestion,
           );
+          expect(newQuestion.status).toBe(201);
         });
       });
     });
@@ -291,7 +292,7 @@ describe('e2e with mock jwt', () => {
             appGet()
               .patch(`/users/${userResponse.body.id}`)
               .send(updateUserDto),
-            userId,
+            updateUserDto.id,
             username,
           );
 
@@ -308,7 +309,7 @@ describe('e2e with mock jwt', () => {
       it('should delete user', async () => {
         const response = await asAuthorizedUser(
           appGet().delete(`/users/${userResponse.body.id}`).send(fakeUser),
-          userId,
+          userResponse.body.id,
           username,
         );
         expect(response.status).toBe(200);
