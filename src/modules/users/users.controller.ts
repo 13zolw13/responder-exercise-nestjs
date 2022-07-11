@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CheckPolicies } from '../../decorators/checkRites.decorator';
 import { Public } from '../../decorators/publicSIte.decorator';
 import { AuthByIdGuard } from '../auth/authorizedById.guard';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,8 +26,7 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Request() req) {
-    console.log(req?.user);
+  findAll() {
     return this.usersService.findAll();
   }
 
