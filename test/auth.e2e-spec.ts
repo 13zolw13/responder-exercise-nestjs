@@ -6,7 +6,7 @@ import { AppModule } from '../src/modules/app/app.module';
 import { CreateUserDto } from '../src/modules/users/dto/create-user.dto';
 import { cleanupBeforeEachSpec } from '../src/utils/dbCleaner';
 
-describe.skip('AppController (e2e)', () => {
+describe('AppController (e2e)', () => {
   let app: INestApplication;
   const appGet = () => request(app.getHttpServer());
   beforeAll(async () => {

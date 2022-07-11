@@ -19,6 +19,8 @@ export class DatabaseService implements TypeOrmOptionsFactory {
       logging: true,
       entities: [Question, Answer, User],
       autoLoadEntities: true,
+      // dropSchema: true,
+      // createDatabase: true,
       // migrations: [__dirname + '/migrations/*{.ts,.js}'],
       // migrationsRun: true,
       // migrationsTableName: 'migrations',

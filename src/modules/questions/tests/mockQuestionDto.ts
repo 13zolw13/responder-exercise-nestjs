@@ -59,6 +59,7 @@ export const MockAnswers: Answer[] = [
     questionId: MockQuestions[0].id,
     question: MockQuestions[0],
     user: mockUserNew,
+    userId: mockUserNew.id,
   },
   {
     id: faker.datatype.uuid(),
@@ -67,6 +68,7 @@ export const MockAnswers: Answer[] = [
     questionId: MockQuestions[0].id,
     question: MockQuestions[0],
     user: mockUserNew,
+    userId: mockUserNew.id,
   },
   {
     id: faker.datatype.uuid(),
@@ -75,6 +77,7 @@ export const MockAnswers: Answer[] = [
     questionId: MockQuestions[0].id,
     question: MockQuestions[0],
     user: mockUserNew,
+    userId: mockUserNew.id,
   },
   {
     id: faker.datatype.uuid(),
@@ -83,6 +86,7 @@ export const MockAnswers: Answer[] = [
     questionId: MockQuestions[0].id,
     question: MockQuestions[0],
     user: mockUserNew,
+    userId: mockUserNew.id,
   },
 ];
 MockQuestions[0].answers = MockAnswers;

@@ -22,6 +22,8 @@ export class Answer {
   @Column()
   author: string;
 
+  @Column()
+  userId: string;
   @ManyToOne((type) => Question, (question) => question.answers)
   @JoinColumn()
   question: Question;

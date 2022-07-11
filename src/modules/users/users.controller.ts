@@ -6,9 +6,12 @@ import {
   Param,
   Patch,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '../../decorators/publicSIte.decorator';
+import { AuthByIdGuard } from '../auth/authorizedById.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -33,14 +36,18 @@ export class UsersController {
   }
 
   @Patch(':userId')
+  @UseGuards(AuthByIdGuard)
   async update(
     @Param('userId') userId: string,
+    @Request() req,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    console.log(req?.user);
     return await this.usersService.update(updateUserDto);
   }
 
   @Delete(':userId')
+  @UseGuards(AuthByIdGuard)
   remove(@Param('userId') userId: string) {
     return this.usersService.remove(userId);
   }
